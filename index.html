@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Fichas de Leitura</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Gerenciador de Fichas de Leitura</h2>
+
+        <!-- Formulário para adicionar ou editar ficha -->
+        <form id="readingForm">
+            <div class="form-group">
+                <label for="bookTitle">Título do Livro</label>
+                <input type="text" class="form-control" id="bookTitle" placeholder="Título" required>
+            </div>
+            <div class="form-group">
+                <label for="bookAuthor">Autor</label>
+                <input type="text" class="form-control" id="bookAuthor" placeholder="Autor" required>
+            </div>
+            <div class="form-group">
+                <label for="bookGenre">Gênero</label>
+                <input type="text" class="form-control" id="bookGenre" placeholder="Gênero" required>
+            </div>
+            <div class="form-group">
+                <label for="bookDescription">Descrição</label>
+                <textarea class="form-control" id="bookDescription" placeholder="Breve descrição sobre o livro" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitButton">Adicionar Ficha</button>
+        </form>
+
+        <!-- Lista de fichas -->
+        <h3 class="mt-5">Fichas de Leitura</h3>
+        <ul id="readingList" class="list-group mt-3"></ul>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, e jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Carregar as fichas de leitura do localStorage
+        function loadReadingList() {
+            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+            const readingListContainer = document.getElementById('readingList');
+            readingListContainer.innerHTML = ''; // Limpar a lista antes de recarregar
+
+            storedBooks.forEach((book, index) => {
+                const li = document.createElement('li');
+                li.classList.add('list-group-item');
+                li.innerHTML = `
+                    <strong>${book.title}</strong> por ${book.author} - ${book.genre}<br>
+                    <small>${book.description}</small><br>
+                    <button class="btn btn-warning btn-sm mt-2" onclick="editBook(${index})">Editar</button>
+                    <button class="btn btn-danger btn-sm mt-2 ml-2" onclick="deleteBook(${index})">Excluir</button>
+                `;
+                readingListContainer.appendChild(li);
+            });
+        }
+
+        // Adicionar ou editar uma ficha de leitura
+        document.getElementById('readingForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            const genre = document.getElementById('bookGenre').value;
+            const description = document.getElementById('bookDescription').value;
+
+            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+
+            // Verifica se estamos editando ou adicionando uma nova ficha
+            const book = { title, author, genre, description };
+            storedBooks.push(book);
+
+            // Salva as fichas no localStorage
+            localStorage.setItem('readingList', JSON.stringify(storedBooks));
+
+            // Limpa o formulário e recarrega a lista
+            document.getElementById('readingForm').reset();
+            loadReadingList();
+        });
+
+        // Excluir uma ficha de leitura
+        function deleteBook(index) {
+            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+            storedBooks.splice(index, 1); // Remove o livro pelo índice
+            localStorage.setItem('readingList', JSON.stringify(storedBooks));
+            loadReadingList();
+        }
+
+        // Editar uma ficha de leitura
+        function editBook(index) {
+            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+            const book = storedBooks[index];
+
+            // Preenche o formulário com os dados da ficha
+            document.getElementById('bookTitle').value = book.title;
+            document.getElementById('bookAuthor').value = book.author;
+            document.getElementById('bookGenre').value = book.genre;
+            document.getElementById('bookDescription').value = book.description;
+
+            // Remove a ficha antiga e atualiza
+            storedBooks.splice(index, 1);
+            localStorage.setItem('readingList', JSON.stringify(storedBooks));
+            loadReadingList();
+        }
+
+        // Carregar a lista ao iniciar a página
+        window.onload = loadReadingList;
+    </script>
+</body>
+</html>
