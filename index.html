@@ -37,17 +37,22 @@
         <ul id="readingList" class="list-group mt-3"></ul>
     </div>
 
-    <!-- Bootstrap JS, Popper.js, e jQuery -->
+    <!-- Bootstrap JS, Popper.js e jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        // Carregar as fichas de leitura do localStorage
-        function loadReadingList() {
-            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
-            const readingListContainer = document.getElementById('readingList');
-            readingListContainer.innerHTML = ''; // Limpar a lista antes de recarregar
 
+    <script>
+        // Função que carrega as fichas de leitura salvas no localStorage
+        function loadReadingList() {
+            // Recupera a lista do localStorage
+            // O uso de getItem recupera uma string; JSON.parse converte essa string em um array de objetos
+            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+
+            const readingListContainer = document.getElementById('readingList');
+            readingListContainer.innerHTML = ''; // Limpa a lista antes de recarregar
+
+            // Percorre cada ficha e cria um item na interface
             storedBooks.forEach((book, index) => {
                 const li = document.createElement('li');
                 li.classList.add('list-group-item');
@@ -61,55 +66,59 @@
             });
         }
 
-        // Adicionar ou editar uma ficha de leitura
+        // Ouvinte de evento para submissão do formulário
         document.getElementById('readingForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Impede o recarregamento da página
 
+            // Coleta os dados digitados pelo usuário
             const title = document.getElementById('bookTitle').value;
             const author = document.getElementById('bookAuthor').value;
             const genre = document.getElementById('bookGenre').value;
             const description = document.getElementById('bookDescription').value;
 
+            // Recupera os livros salvos, ou um array vazio se não houver nenhum
             const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
 
-            // Verifica se estamos editando ou adicionando uma nova ficha
+            // Cria um novo objeto de livro
             const book = { title, author, genre, description };
+
+            // Adiciona o novo livro à lista
             storedBooks.push(book);
 
-            // Salva as fichas no localStorage
+            // Salva a lista atualizada no localStorage
             localStorage.setItem('readingList', JSON.stringify(storedBooks));
 
-            // Limpa o formulário e recarrega a lista
+            // Limpa o formulário e recarrega a lista exibida
             document.getElementById('readingForm').reset();
             loadReadingList();
         });
 
-        // Excluir uma ficha de leitura
+        // Função para excluir uma ficha
         function deleteBook(index) {
             const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
-            storedBooks.splice(index, 1); // Remove o livro pelo índice
-            localStorage.setItem('readingList', JSON.stringify(storedBooks));
-            loadReadingList();
+            storedBooks.splice(index, 1); // Remove o item pelo índice
+            localStorage.setItem('readingList', JSON.stringify(storedBooks)); // Atualiza o armazenamento
+            loadReadingList(); // Recarrega a lista
         }
 
-        // Editar uma ficha de leitura
+        // Função para editar uma ficha existente
         function editBook(index) {
             const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
             const book = storedBooks[index];
 
-            // Preenche o formulário com os dados da ficha
+            // Preenche o formulário com os dados da ficha selecionada
             document.getElementById('bookTitle').value = book.title;
             document.getElementById('bookAuthor').value = book.author;
             document.getElementById('bookGenre').value = book.genre;
             document.getElementById('bookDescription').value = book.description;
 
-            // Remove a ficha antiga e atualiza
+            // Remove o item antigo da lista para que ele seja sobrescrito após edição
             storedBooks.splice(index, 1);
             localStorage.setItem('readingList', JSON.stringify(storedBooks));
             loadReadingList();
         }
 
-        // Carregar a lista ao iniciar a página
+        // Ao carregar a página, exibe as fichas salvas
         window.onload = loadReadingList;
     </script>
 </body>
