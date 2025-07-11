@@ -1,147 +1,227 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Fichas de Leitura</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerenciador de Fichas de Leitura</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+  </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2>Gerenciador de Fichas de Leitura</h2>
+  <div class="container mt-5">
+    <h2>Gerenciador de Fichas de Leitura</h2>
 
-        <!-- Botões de contador e reset (ADICIONADO) -->
-        <div class="my-3">
-            <button id="clickCounterBtn" class="btn btn-success">Clique aqui!</button>
-            <button id="resetCounterBtn" class="btn btn-secondary ml-2">Resetar contador</button>
-            <span id="clickCountText" class="ml-3">Este botão foi clicado 0 vezes.</span>
-        </div>
-
-        <!-- Formulário para adicionar ou editar ficha -->
-        <form id="readingForm">
-            <div class="form-group">
-                <label for="bookTitle">Título do Livro</label>
-                <input type="text" class="form-control" id="bookTitle" placeholder="Título" required>
-            </div>
-            <div class="form-group">
-                <label for="bookAuthor">Autor</label>
-                <input type="text" class="form-control" id="bookAuthor" placeholder="Autor" required>
-            </div>
-            <div class="form-group">
-                <label for="bookGenre">Gênero</label>
-                <input type="text" class="form-control" id="bookGenre" placeholder="Gênero" required>
-            </div>
-            <div class="form-group">
-                <label for="bookDescription">Descrição</label>
-                <textarea class="form-control" id="bookDescription" placeholder="Breve descrição sobre o livro" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary" id="submitButton">Adicionar Ficha</button>
-        </form>
-
-        <!-- Lista de fichas -->
-        <h3 class="mt-5">Fichas de Leitura</h3>
-        <ul id="readingList" class="list-group mt-3"></ul>
+    <!-- Botões de estilo visual -->
+    <div class="btn-group-custom mb-3">
+      <button id="darkModeBtn" class="btn btn-dark">Modo claro/escuro</button>
+      <button id="resetStyleBtn" class="btn btn-outline-secondary ml-2">modo/ laranja</button>
     </div>
 
-    <!-- Bootstrap JS, Popper.js e jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <script>
-        // Função que carrega as fichas de leitura salvas no localStorage
-        function loadReadingList() {
-            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
-
-            const readingListContainer = document.getElementById('readingList');
-            readingListContainer.innerHTML = '';
-
-            storedBooks.forEach((book, index) => {
-                const li = document.createElement('li');
-                li.classList.add('list-group-item');
-                li.innerHTML = `
-                    <strong>${book.title}</strong> por ${book.author} - ${book.genre}<br>
-                    <small>${book.description}</small><br>
-                    <button class="btn btn-warning btn-sm mt-2" onclick="editBook(${index})">Editar</button>
-                    <button class="btn btn-danger btn-sm mt-2 ml-2" onclick="deleteBook(${index})">Excluir</button>
-                `;
-                readingListContainer.appendChild(li);
-            });
+    <style>
+        /* Estilo para modo escuro que altera fundo da página e texto das fichas */
+        body.dark-mode {
+          background-color: #000000 !important;
+          color: #f1f1f1 !important;
         }
-
-        // Ouvinte de evento para submissão do formulário
-        document.getElementById('readingForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const title = document.getElementById('bookTitle').value;
-            const author = document.getElementById('bookAuthor').value;
-            const genre = document.getElementById('bookGenre').value;
-            const description = document.getElementById('bookDescription').value;
-
-            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
-            const book = { title, author, genre, description };
-
-            storedBooks.push(book);
-            localStorage.setItem('readingList', JSON.stringify(storedBooks));
-
-            document.getElementById('readingForm').reset();
-            loadReadingList();
-        });
-
-        // Função para excluir uma ficha
-        function deleteBook(index) {
-            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
-            storedBooks.splice(index, 1);
-            localStorage.setItem('readingList', JSON.stringify(storedBooks));
-            loadReadingList();
+    
+        /* Para garantir que as fichas sigam o modo escuro */
+        body.dark-mode #readingList li {
+          background-color: #201202e0;
+          color: #f1f1f1;
+          border-color: #ffffff;
         }
-
-        // Função para editar uma ficha existente
-        function editBook(index) {
-            const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
-            const book = storedBooks[index];
-
-            document.getElementById('bookTitle').value = book.title;
-            document.getElementById('bookAuthor').value = book.author;
-            document.getElementById('bookGenre').value = book.genre;
-            document.getElementById('bookDescription').value = book.description;
-
-            storedBooks.splice(index, 1);
-            localStorage.setItem('readingList', JSON.stringify(storedBooks));
-            loadReadingList();
+    
+        /* Resetar estilos do botão e outros textos caso necessário */
+        body.dark-mode .btn {
+          color: #f1f1f1;
         }
+      </style>
+    
 
-        // Ao carregar a página
-        window.onload = function () {
-            loadReadingList();
 
-            // ================== CONTADOR DE CLIQUES COM RESET ==================
+    <!-- Botões de contador -->
+    <div class="my-3">
+      <button id="clickCounterBtn" class="btn btn-success">Clique aqui!</button>
+      <button id="resetCounterBtn" class="btn btn-secondary ml-2">Resetar contador</button>
+      <span id="clickCountText" class="ml-3">Este botão foi clicado 0 vezes.</span>
+    </div>
+    
 
-            // Recupera número salvo de cliques ou começa do zero
-            let clickCount = parseInt(localStorage.getItem('clickCount')) || 0;
+    <!-- Formulário para adicionar ou editar ficha -->
+    <form id="readingForm">
+      <div class="form-group">
+        <label for="bookTitle">Título do Livro</label>
+        <input type="text" class="form-control" id="bookTitle" placeholder="Título" required />
+      </div>
+      <div class="form-group">
+        <label for="bookAuthor">Autor</label>
+        <input type="text" class="form-control" id="bookAuthor" placeholder="Autor" required />
+      </div>
+      <div class="form-group">
+        <label for="bookGenre">Gênero</label>
+        <input type="text" class="form-control" id="bookGenre" placeholder="Gênero" required />
+      </div>
+      <div class="form-group">
+        <label for="bookDescription">Descrição</label>
+        <textarea class="form-control" id="bookDescription" placeholder="Breve descrição sobre o livro" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" id="submitButton">Adicionar Ficha</button>
+    </form>
 
-            const countText = document.getElementById('clickCountText');
-            const clickButton = document.getElementById('clickCounterBtn');
-            const resetButton = document.getElementById('resetCounterBtn');
+    <!-- Lista de fichas -->
+    <h3 class="mt-5">Fichas de Leitura</h3>
+    <ul id="readingList" class="list-group mt-3"></ul>
+  </div>
 
-            // Mostra número inicial
-            countText.textContent = `Este botão foi clicado ${clickCount} vezes.`;
+  <!-- Bootstrap JS, Popper.js e jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-            // Botão de clique - incrementa o contador
-            clickButton.addEventListener('click', function () {
-                clickCount++;
-                localStorage.setItem('clickCount', clickCount);
-                countText.textContent = `Este botão foi clicado ${clickCount} vezes.`;
-            });
+  <script>
+    // Função que carrega as fichas de leitura salvas
+    function loadReadingList() {
+      const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+      const readingListContainer = document.getElementById('readingList');
+      readingListContainer.innerHTML = '';
 
-            // Botão de resetar - zera o contador
-            resetButton.addEventListener('click', function () {
-                clickCount = 0;
-                localStorage.setItem('clickCount', clickCount);
-                countText.textContent = `Este botão foi clicado 0 vezes.`;
-            });
-        };
-    </script>
+      storedBooks.forEach((book, index) => {
+        const li = document.createElement('li');
+        li.classList.add('list-group-item');
+        li.innerHTML = `
+          <strong>${book.title}</strong> por ${book.author} - ${book.genre}<br>
+          <small>${book.description}</small><br>
+          <button class="btn btn-warning btn-sm mt-2" onclick="editBook(${index})">Editar</button>
+          <button class="btn btn-danger btn-sm mt-2 ml-2" onclick="deleteBook(${index})">Excluir</button>
+        `;
+        readingListContainer.appendChild(li);
+      });
+    }
+
+    // Submissão do formulário
+    document.getElementById('readingForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const title = document.getElementById('bookTitle').value;
+      const author = document.getElementById('bookAuthor').value;
+      const genre = document.getElementById('bookGenre').value;
+      const description = document.getElementById('bookDescription').value;
+
+      const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+      storedBooks.push({ title, author, genre, description });
+
+      localStorage.setItem('readingList', JSON.stringify(storedBooks));
+      document.getElementById('readingForm').reset();
+      loadReadingList();
+    });
+
+    // Excluir ficha
+    function deleteBook(index) {
+      const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+      storedBooks.splice(index, 1);
+      localStorage.setItem('readingList', JSON.stringify(storedBooks));
+      loadReadingList();
+    }
+
+    // Editar ficha
+    function editBook(index) {
+      const storedBooks = JSON.parse(localStorage.getItem('readingList')) || [];
+      const book = storedBooks[index];
+
+      document.getElementById('bookTitle').value = book.title;
+      document.getElementById('bookAuthor').value = book.author;
+      document.getElementById('bookGenre').value = book.genre;
+      document.getElementById('bookDescription').value = book.description;
+
+      storedBooks.splice(index, 1);
+      localStorage.setItem('readingList', JSON.stringify(storedBooks));
+      loadReadingList();
+    }
+
+    // Função para aplicar modo escuro se salvo
+    function applySavedColorMode() {
+      const savedMode = localStorage.getItem('colorMode');
+      if (savedMode === 'dark') {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+
+    window.onload = function () {
+      loadReadingList();
+      applySavedColorMode();
+
+      // ===== Contador de cliques =====
+      let clickCount = parseInt(localStorage.getItem('clickCount')) || 0;
+      const countText = document.getElementById('clickCountText');
+      const clickButton = document.getElementById('clickCounterBtn');
+      const resetButton = document.getElementById('resetCounterBtn');
+
+      countText.textContent = `Este botão foi clicado ${clickCount} vezes.`;
+
+      clickButton.addEventListener('click', function () {
+        clickCount++;
+        localStorage.setItem('clickCount', clickCount);
+        countText.textContent = `Este botão foi clicado ${clickCount} vezes.`;
+      });
+
+      resetButton.addEventListener('click', function () {
+        clickCount = 0;
+        localStorage.setItem('clickCount', clickCount);
+        countText.textContent = `Este botão foi clicado 0 vezes.`;
+      });
+
+      // ===== Botão Modo Escuro / Claro =====
+      const darkBtn = document.getElementById('darkModeBtn');
+      const resetStyleBtn = document.getElementById('resetStyleBtn');
+
+      darkBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+
+        // Salva ou remove a preferência no localStorage
+        if (document.body.classList.contains('dark-mode')) {
+          localStorage.setItem('colorMode', 'dark');
+        } else {
+          localStorage.removeItem('colorMode');
+        }
+      });
+
+      resetStyleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('laranja-mode');
+        if (document.body.classList.contains('laranja-mode')){
+
+        } else {}
+        
+        
+        localStorage.setItem('colorMode', 'laranja');
+      });
+    };
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>
